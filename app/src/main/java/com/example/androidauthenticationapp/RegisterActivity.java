@@ -6,6 +6,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import java.io.IOException;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -48,6 +56,29 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
+        Call<ResponseBody> call = RetrofitClient
+                .getInstance()
+                .getAPI()
+                .CreateUser(username, password);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    String s = response.body().string();
+                    Toast.makeText(RegisterActivity.this, s, Toast.LENGTH_LONG).show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Toast.makeText(RegisterActivity.this, "Some other error", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(RegisterActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
 
     }
 }
