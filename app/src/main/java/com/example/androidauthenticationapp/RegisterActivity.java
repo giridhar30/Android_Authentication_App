@@ -43,10 +43,10 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void registerUser() {
-        String username = etUsername.getText().toString().trim();
+        String userName = etUsername.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
-        if (username.isEmpty()) {
+        if (userName.isEmpty()) {
             etUsername.setError("Username is required");
             etUsername.requestFocus();
             return;
@@ -59,19 +59,24 @@ public class RegisterActivity extends AppCompatActivity {
         Call<ResponseBody> call = RetrofitClient
                 .getInstance()
                 .getAPI()
-                .CreateUser(username, password);
+                .createUser(new User(userName, password));
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                String s = "";
                 try {
-                    String s = response.body().string();
-                    Toast.makeText(RegisterActivity.this, s, Toast.LENGTH_LONG).show();
+                    s = response.body().string();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
-                Toast.makeText(RegisterActivity.this, "Some other error", Toast.LENGTH_LONG).show();
+                if (s.equals("SUCCESS")) {
+                    Toast.makeText(RegisterActivity.this, "Successfully registered. Please login", Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                } else {
+                    Toast.makeText(RegisterActivity.this, "User already exists!", Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override

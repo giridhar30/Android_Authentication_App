@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="20dp"
+    android:background="@color/colorAccent"
     tools:context=".LoginActivity">
 
     <TextView
@@ -82,7 +83,7 @@
         android:layout_marginTop="48dp"
         android:gravity="center"
         android:text="New user?\nClick here to register"
-        android:textColor="@android:color/holo_blue_light"
+        android:textColor="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"

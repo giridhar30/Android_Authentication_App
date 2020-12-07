@@ -6,6 +6,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import java.io.IOException;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -35,10 +43,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginUser() {
-        String username = etUsername.getText().toString().trim();
+        final String userName = etUsername.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
-        if (username.isEmpty()) {
+        if (userName.isEmpty()) {
             etUsername.setError("Username is required");
             etUsername.requestFocus();
             return;
@@ -47,6 +55,35 @@ public class LoginActivity extends AppCompatActivity {
             etPassword.requestFocus();
             return;
         }
+
+        Call<ResponseBody> call = RetrofitClient
+                .getInstance()
+                .getAPI()
+                .checkUser(new User(userName, password));
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                String s = "";
+                try {
+                    s = response.body().string();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if (s.equals(userName)) {
+                    Toast.makeText(LoginActivity.this, "User logged in!", Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(LoginActivity.this, DashboardActivity.class).putExtra("username", userName));
+                } else {
+                    Toast.makeText(LoginActivity.this, "Incorrect Credentials! Try again!", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
 
     }
 }
